@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+    <title>Abalone Board</title>
+    <link rel="stylesheet" type="text/css" href="app/abalone.css">
+    <script src=".\node_modules\systemjs\dist\system.src.js"></script>
+    <script src="system.config.js"></script>
+    <script>
+          System.import('./dist/main.js').then(function(m) {
+            console.log("success loading");
+            window.onload();
+          });
+    </script>
+</head>
+<body>
+    <div id="content"></div>
+    <div class="container">
+        <div class="abalone">
+        </div>
+        <div class="abalonecontrol">
+            <div class="groupcontrol">
+                <h2>SVG Properties</h2>
+                Width:<input type="number" id="svgwidth" value="500" onchange="renderAbalone.svgwidth_onkeypress()"
+                    onkeypress="this.onchange()" onpaste="this.onchange();" oninput="this.onchange();">
+                Height:<input type="number" id="svgheight" value="500" onchange="svgheight_onkeypress()"
+                    onkeypress="this.onchange()" onpaste="this.onchange();" oninput="this.onchange();">
+                Maintain Aspect Ratio: <input type="checkbox" id="svgaspectratiocheck" checked="true"><br />
+                <div class="subgroupcontrol">
+                    <h3>SVG Border</h3>
+                    Border Color:<input type="color" id="svgbordercolor" value="#ffc299">
+                    Fill Color:<input type="color" id="svgfill" value="#00f299">
+                    Border Width:<input type="number" id="svgborderwidth" value="2">
+                </div>
+                <button onclick="onLoadHtml()">Update</button>
+            </div>
+            Lock Size: <input type="checkbox" id="svglockcalculatecheck" checked="true" onchange="svg_lockaspectdata()"
+                onkeypress="this.onchange()" onpaste="this.onchange();" oninput="this.onchange();"><br />
+            <div class="groupcontrol">
+                <h2>Abalone Properties</h2>
+                Radial Length:<input type="number" id="radialwidth" value="210">
+                Circles Per Side:<input type="number" id="circlesPerSide" value="5">
+                Border Beam:<input type="number" id="borderbeam" value="4">
+                Cell Radius Gap:<input type="number" id="cellradiusgap" value="2.5" step="any">
+                <div class="subgroupcontrol">
+                    <h3>Abalone Outer Properties</h3>
+                    Outer Border Stroke:<input type="color" id="outerborderstroke" value="black">
+                    Outer Border Fill:<input type="color" id="outerborderfill" value="#f0c299">
+                    Outer Border Stroke Width:<input type="number" id="outerborderstrokewidth" value="2">
+                </div>
+                <div class="subgroupcontrol">
+                    <h3>Abalone Cell Properties</h3>
+                    Cell Border Stroke:<input type="color" id="cellborderstroke" value="black">
+                    Cell Border Fill:<input type="color" id="cellborderfill" value="#00c299">
+                    Cell Border Stroke Width:<input type="number" id="cellborderstrokewidth" value="1">
+                </div>
+                <button onclick="onLoadHtml()">Update</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

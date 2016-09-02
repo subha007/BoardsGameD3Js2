@@ -1,0 +1,31 @@
+{
+  "name": "boardgamejs",
+  "version": "1.0.0",
+  "description": "A javascript library for any 2D board game generation",
+  "main": "index.js",
+  "scripts": {
+    "test": "test",
+    "dev": "lite-server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/subha007/BoardsGameD3Js2.git"
+  },
+  "keywords": [
+    "boardgame",
+    "2D",
+    "SVG"
+  ],
+  "author": "David SN Jones",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/subha007/BoardsGameD3Js2/issues"
+  },
+  "homepage": "https://github.com/subha007/BoardsGameD3Js2#readme",
+  "devDependencies": {
+    "d3": "^4.2.2"
+  },
+  "dependencies": {
+    "d3": "^4.2.2"
+  }
+}

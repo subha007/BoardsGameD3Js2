@@ -1,0 +1,26 @@
+{
+    "compilerOptions": {
+        "declaration": true,
+        "diagnostics": true,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "noEmitOnError": true,
+        "module": "system",
+        "noImplicitAny": true,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "sourceMap": true,
+        "pretty": true,
+        "target": "es5",
+        "outDir": "dist"
+    },
+    "files": [
+        "./app/**/*.ts"
+    ],
+    "exclude": [
+        "gulpfile.ts",
+        "node_modules",
+        "typings",
+        "dist"
+    ]
+}
