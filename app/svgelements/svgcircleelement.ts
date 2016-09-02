@@ -8,7 +8,7 @@ import { SvgAttributes } from './svgattributes';
   * <li>The 'Circle' represents tag name in SVG</li>
   * <li>The last part 'Element' represents type of XML tag</li></ul>
 */
-export class CircleElement {
+export class SvgCircleElement {
 
   /**
      * Represents the core attributes of <circle>

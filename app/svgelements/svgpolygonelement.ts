@@ -15,7 +15,7 @@ export class SvgPolygonElement {
      * @type {SvgAttributes}
      * @public
      */
-  public _attributes: SvgAttributes;
+  public Attributes: SvgAttributes;
 
   /**
      * Creates an empty CircleElement object.
@@ -27,13 +27,6 @@ export class SvgPolygonElement {
      * @constructor
      */
   constructor() {
-    this._attributes = new SvgAttributes();
+    this.Attributes = new SvgAttributes();
   }
-
-  /**
-     * Get the Basic Attributes attribute of the element
-     * @type {Object}
-     * @public
-     */
-  public get Attributes(): SvgAttributes { return this._attributes; }
 }

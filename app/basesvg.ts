@@ -1,5 +1,6 @@
 import { Helper } from './helper';
 import { SvgElement } from './svgelements/svgelement';
+import { CCPoint2D } from './dimensions/ccpoint2d';
 
 export class SvgBase {
     // Dimensions
@@ -51,7 +52,7 @@ export class SvgBase {
         return this.svgHeight / 2;
     }
 
-    public getCenter() {
-        return {x: this.getRadialWidth(), y: this.getRadialHeight()};
+    public getCenter(): CCPoint2D {
+        return new CCPoint2D(this.getRadialWidth(), this.getRadialHeight());
     }
 }

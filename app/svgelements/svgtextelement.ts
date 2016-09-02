@@ -8,14 +8,19 @@ import { SvgAttributes } from './svgattributes';
   * <li>The 'Text' represents tag name in SVG</li>
   * <li>The last part 'Element' represents type of XML tag</li></ul>
 */
-export class TextElement {
+export class SvgTextElement {
 
   /**
      * Represents the core attributes of <circle>
      * @type {SvgAttributes}
      * @public
      */
-  public _attributes: SvgAttributes;
+  public Attributes: SvgAttributes;
+
+  /**
+   * The actual text
+   */
+  public Value: string;
 
   /**
      * Creates an empty CircleElement object.
@@ -26,14 +31,9 @@ export class TextElement {
      *
      * @constructor
      */
-  constructor() {
-    this._attributes = new SvgAttributes();
-  }
+  constructor(value? : string) {
+    this.Attributes = new SvgAttributes();
 
-  /**
-     * Get the Basic Attributes attribute of the element
-     * @type {Object}
-     * @public
-     */
-  public get Attributes(): SvgAttributes { return this._attributes; }
+    this.Value = value;
+  }
 }

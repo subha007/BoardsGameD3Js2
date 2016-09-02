@@ -18,7 +18,7 @@ export class SvgElement {
      * @type {SvgAttributes}
      * @public
      */
-  public _attributes: SvgAttributes;
+  public Attributes: SvgAttributes;
 
   /**
      * Creates an empty SvgElement object.
@@ -33,7 +33,7 @@ export class SvgElement {
      * @constructor
      */
   constructor() {
-    this._attributes = new SvgAttributes();
+    this.Attributes = new SvgAttributes();
   }
 
   /**
@@ -44,13 +44,6 @@ export class SvgElement {
      * @return Returns the saved value
      */
   public ViewBox(viewBox?: SvgViewBoxAttribute) : SvgViewBoxAttribute {
-    return this._attributes.Add("viewbox", viewBox);
+    return this.Attributes.Add("viewbox", viewBox);
   }
-
-  /**
-     * Get the Basic Attributes attribute of the element
-     * @type {Object}
-     * @public
-     */
-  public get Attributes(): SvgAttributes { return this._attributes; }
 }

@@ -3,71 +3,248 @@ import { SvgBase } from './basesvg';
 import { Helper } from './helper';
 import { SVGDocument } from './document/svg';
 import { CCPolygon2D } from './shapes/ccpolygon2d';
+import { CCCircle2D } from './shapes/cccircle2d';
+import { SvgTextElement } from './svgelements/svgtextelement';
+import { CCPoint2D } from './dimensions/ccpoint2d';
+import { Size2D } from './dimensions/size2d';
 
 //declare let d3: any;
 
+/**
+ * The main Abalone board game graphical representation with seperate parts
+ * This uses different components to build the board and makes it configurable.
+ * 
+ * @author Subhadeep Niogi
+ * @version 1.0
+ * 
+ */
 export class AbaloneBoard {
 	
-	private _outerBorder: CCPolygon2D;
-	private _innerBorder: CCPolygon2D;
+  /**
+   * The base svg area and its properties
+   */
+  public SvgArea = new SvgBase();
 
-    // Private Composition
-    private svg_area = new SvgBase();
+  /**
+   * The outermost border of the board
+   */
+	public OuterBorder: CCPolygon2D;
 
-    // Properties
-    private edgeCount: number = 6;
-    private circlesPerSide: number = 5;
-    private borderBeam: number = 10;
-    private radialLength: number = 210;
-    private cellGap: number = 0;
-    private isLockSvgSize: boolean = true;
-    private isLockSvgAbalone: boolean = true;
-    private cellRows: number = 0;
-    private cellCols: number = 0;
-    private xUnit: number = 0;
-    private yUnit: number = 0;
+  /**
+   * The inner border of the border which holds all the parts
+   */
+	public InnerBorder: CCPolygon2D;
 
-    private outerBorderStroke: string = "#00c299";
-    private outerBorderFill: string = "#00c299";
-    private outerBorderStrokeWidth: string = "5";
-    private cellBorderStroke: string = "black";
-    private cellBorderFill: string = "#00c299";
-    private cellBorderStrokeWidth: string = "5";
-    private textBoardMarkerFont: string = "sans-serif";
-    private textBoardMarkerFontSize: string = "12";
-    private cellsIndexFont: string = "sans-serif";
-    private cellsIndexFontSize: string = "12";
+  /**
+   * The actual places on the board which is used to place player's pieces and play
+   */
+  public CellsWherePiecesArePlaced: CCCircle2D[][];
 
-    // Manipulated
-    private origin: any;
+  /**
+   * The gap between each cell (Same as gap between the radial width)
+   */
+  public CellGap: number;
 
-    private extAnglerad: number = 0;
-    private innerRadialLength: number = 0;
+  /**
+   * The pieces and their positions on the board
+   * 1. The first index represents player Id
+   * 2. The second and third index represents position (x, y)
+   */
+  public PiecesAllPerPlayer: CCCircle2D[][][];
 
-    // temporary Private variables not to be exposed
-    // Arrays
-    private outerHexVertices: number[];
-    private translationMatrix: any[];
-    private cellPositions: any[];
-    private positionText: any[];
-    private cellIndices: any[];
-    private playerPositionMatrix: any[];
-    private playerPositionIndices: any[];
+  /**
+   * Color of each player pieces
+   */
+  public PlayerPiecesColors: string[];
 
-    // Local reference
-    private helper: Helper = Helper.getInstance();
+  /**
+   * The position of the row index elements
+   */
+  public RowIndexTextPosition: CCPoint2D[];
 
-    constructor() {
-        this.origin = this.svg_area.getCenter();
+  /**
+   * The position of the column index elements
+   */
+  public ColumnIndexTextPosition: CCPoint2D[];
 
-        this.outerHexVertices = [];
-        this.translationMatrix = [];
-        this.cellPositions = [];
-        this.positionText = [];
-        this.cellIndices = [];
-        this.playerPositionMatrix = [];
-        this.playerPositionIndices = [];
+  /**
+   * The text elements of the row positions
+   */
+  public RowIndexTextElements: SvgTextElement[];
+
+  /**
+   * The text elements of the row positions
+   */
+  public ColumnIndexTextElements: SvgTextElement[];
+
+  /**
+   * The X-Width and Y-Width unit used for measurement
+   */
+  public UnitMeasure: Size2D;
+
+  /**
+   * The number of cells in rows and columns
+   */
+  public CountCells: CCPoint2D;
+
+  /**
+   * The center of the abalone board
+   */
+  public Origin: CCPoint2D;
+
+  // Local reference
+  private helper: Helper = Helper.getInstance();
+
+  /**
+   * The main translation matrix used to manipulate the cells
+   */
+  private translationMatrix: CCPoint2D[][];
+
+  /**
+   * Initialize the object
+   */
+  constructor() {
+      this.Origin = this.SvgArea.getCenter();
+
+      this.OuterBorder = new CCPolygon2D();
+      this.InnerBorder = new CCPolygon2D();
+
+      this.CellsWherePiecesArePlaced = [];
+      this.CellGap = 0;
+
+      this.PiecesAllPerPlayer = [];
+      this.PlayerPiecesColors = [];
+      this.RowIndexTextPosition = [];
+      this.ColumnIndexTextPosition = [];
+
+      this.RowIndexTextElements = [];
+      this.ColumnIndexTextElements = [];
+
+      this.UnitMeasure = new Size2D();
+      this.CountCells = new CCPoint2D();
+  }
+
+  /**
+   * Get the count of circles per side
+   */
+  public getCirclesPerSide(): number {
+    if(this.translationMatrix != null)
+      if(this.translationMatrix[0] != null)
+        return this.translationMatrix[0].length;
+    
+    return 0;
+  }
+
+  /**
+   * Set the count of circles per side
+   */
+  public setCirclesPerSide(circlesPerSide: number) {
+    this.calculateTranslationMatrix(circlesPerSide);
+  }
+
+  /**
+   * Get the count of cells in a row
+   */
+  public getCellRows(): number {
+    let circlesPerSide = this.getCirclesPerSide();
+    return 2 * circlesPerSide - 1;
+  }
+
+  /**
+   * Calculate the translation matrix
+   */
+  private calculateTranslationMatrix(circlesPerSide: number) {
+      for (let y = (-1) * (circlesPerSide - 1), indx1 = 0;
+              y <= (circlesPerSide - 1) ; ++y, indx1++) {
+
+          let noOfCols = this.getCellRows() - Math.abs(y);
+          let rowData: any[] = [];
+
+          for (let x = (-1) * (noOfCols - 1), indx2 = 0;
+                  x <= (noOfCols - 1) ; x += 2, indx2++) {
+              rowData.push({ x: x, y: y });
+          }
+
+          this.translationMatrix.push(rowData);
+      }
+  }
+
+  /**
+   * Calculate the circle centers
+   */
+  private calculateCircleCentres() {
+    let indexCell = 0;
+    for (let x = 0; x < this.translationMatrix.length; x++) {
+
+        let rowData: any[] = [];
+        for (let y = 0; y < this.translationMatrix[x].length; y++) {
+
+            rowData.push({
+                cx: this.Origin.X + this.translationMatrix[x][y].X * this.UnitMeasure.Width,
+                cy: this.Origin.Y + this.translationMatrix[x][y].Y * this.UnitMeasure.Height,
+                r: this.UnitMeasure.Width - this.CellGap,
+                cellIndex: indexCell++
+            });
+        }
+
+        this.CellsWherePiecesArePlaced.push(rowData);
     }
+  }
+
+  private calculateTextCentres() {
+
+    let circlesPerSide = this.getCirclesPerSide();
+
+    // Get Row Numbers (Alphabets A to I) for top to bottom and left
+    // X Axis is on the next/previous circle stop with the border into consideration
+    // Y axis 'this.xUnit / 4' is to place the text at the center position when the y of translationMatrix is +ve
+    // Else it seems to be out of place. hence it is placed slightly off the center by quarter of the xUnit
+    for (var x = 0; x < this.CountCells.X; x++) {
+        this.RowIndexTextPosition.push({
+            X: this.Origin.X + this.translationMatrix[x][0].X * this.UnitMeasure.Width - 2 * this.UnitMeasure.Width,
+            Y: this.Origin.Y + this.translationMatrix[x][0].Y * this.UnitMeasure.Height
+        });
+    }
+
+    // Set the row text
+    for(var x = 0; x < this.CountCells.X; ++x) {
+      this.RowIndexTextElements.push(
+          new SvgTextElement(String.fromCharCode('A'.charCodeAt(0) + x))
+        );
+    }
+
+    // Calculate Column Ids
+    // Top left start (Only Top portion)
+    for(var y = 0; y < this.translationMatrix[0].length; ++y) {
+      this.ColumnIndexTextPosition.push({
+        X: this.Origin.X + this.translationMatrix[0][y].X * this.UnitMeasure.Width,
+        Y: this.Origin.Y + this.translationMatrix[0][y].Y * this.UnitMeasure.Height - 2 * this.UnitMeasure.Width
+      });
+    }
+
+    // Calculate Column Ids
+    // Top left start (Only Top portion)
+    for(var y = 0; y < this.translationMatrix[0].length; ++y) {
+      this.ColumnIndexTextElements.push(
+          new SvgTextElement(String(y))
+        );
+    }
+
+    // Calculate remaining texts for columns
+    // Top left start (Only Right portion)
+    for(var x = 0; x < circlesPerSide; ++x) {
+      this.ColumnIndexTextPosition.push({
+        X: this.Origin.X + this.translationMatrix[x][this.translationMatrix[x].length - 1].X * this.UnitMeasure.Width + 2 * this.UnitMeasure.Width,
+        Y: this.Origin.Y + this.translationMatrix[x][this.translationMatrix[x].length - 1].Y * this.UnitMeasure.Height
+      });
+    }
+
+    for(var x = 1; x <= circlesPerSide; ++x) {
+      this.ColumnIndexTextElements.push(
+        new SvgTextElement(String(x))
+      );
+    }
+  }
 
     private reloadPropertiesFromControls() {
       this.circlesPerSide = parseInt(this.helper.getValueById("circlesPerSide", this.circlesPerSide), 10);
@@ -103,75 +280,6 @@ export class AbaloneBoard {
                         + this.radialLength * Math.cos((i) * this.extAnglerad));
             this.outerHexVertices.push(this.origin.y
                         + this.radialLength * Math.sin((i) * this.extAnglerad));
-        }
-    }
-
-    private calculateTranslationMatrix() {
-        for (let y = (-1) * (this.circlesPerSide - 1), indx1 = 0;
-                y <= (this.circlesPerSide - 1) ; ++y, indx1++) {
-
-            let noOfCols = this.cellRows - Math.abs(y);
-            let rowData: any[] = [];
-
-            for (let x = (-1) * (noOfCols - 1), indx2 = 0;
-                    x <= (noOfCols - 1) ; x += 2, indx2++) {
-                rowData.push({ x: x, y: y });
-            }
-
-            this.translationMatrix.push(rowData);
-        }
-    }
-
-    private calculateCircleCentres() {
-      let indexCell = 0;
-      for (let x = 0; x < this.translationMatrix.length; x++) {
-
-          let rowData: any[] = [];
-          for (let y = 0; y < this.translationMatrix[x].length; y++) {
-
-              rowData.push({
-                  cx: this.origin.x + this.translationMatrix[x][y].x * this.xUnit,
-                  cy: this.origin.y + this.translationMatrix[x][y].y * this.yUnit,
-                  r: this.xUnit - this.cellGap,
-                  cellIndex: indexCell++
-              });
-          }
-
-          this.cellPositions.push(rowData);
-      }
-    }
-
-    private calculateTextCentres() {
-
-        // Get Row Numbers (Alphabets A to I) for top to bottom and left
-        // X Axis is on the next/previous circle stop with the border into consideration
-        // Y axis 'this.xUnit / 4' is to place the text at the center position when the y of translationMatrix is +ve
-        // Else it seems to be out of place. hence it is placed slightly off the center by quarter of the xUnit
-        for (var x = 0; x < this.cellRows; x++) {
-            this.positionText.push({
-                x: this.origin.x + this.translationMatrix[x][0].x * this.xUnit - 2 * this.xUnit,
-                y: this.origin.y + this.translationMatrix[x][0].y * this.yUnit ,
-                value: String.fromCharCode('A'.charCodeAt(0) + x)
-            });
-        }
-
-        // Calculate Column Ids
-        // Top left start (Only Top portion)
-        for(var y = 0; y < this.translationMatrix[0].length; ++y) {
-          this.positionText.push({
-            x: this.origin.x + this.translationMatrix[0][y].x * this.xUnit,
-            y: this.origin.y + this.translationMatrix[0][y].y * this.yUnit - 2 * this.xUnit,
-            value: y
-          });
-        }
-
-        // Top left start (Only Right portion)
-        for(var x = 0; x < this.circlesPerSide; ++x) {
-          this.positionText.push({
-            x: this.origin.x + this.translationMatrix[x][this.translationMatrix[x].length - 1].x * this.xUnit + 2 * this.xUnit,
-            y: this.origin.y + this.translationMatrix[x][this.translationMatrix[x].length - 1].y * this.yUnit ,
-            value: x + this.circlesPerSide
-          });
         }
     }
 

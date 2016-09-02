@@ -40,7 +40,6 @@ export class CCPoint2D {
      * @param {number=} x The X Coordinate of the point
      * @param {number=} y The y Coordinate of the point
      */
-  constructor();
   constructor(x?: number, y?: number) {
     this.X = x || 0;
     this.Y = y || 0;
