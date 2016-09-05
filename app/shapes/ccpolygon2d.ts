@@ -27,4 +27,11 @@ export class CCPolygon2D {
 	private Initialize() {
 		this.ExternalAngleInRad = Math.PI / this.EdgeCount * 2;
 	}
+
+	/**
+	 * Set the radius
+	 */
+	public setRadius(radius: number) {
+		this.RadiusOutCircle = radius;
+	}
 }

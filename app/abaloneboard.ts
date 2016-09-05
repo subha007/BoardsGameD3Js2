@@ -146,8 +146,51 @@ export class AbaloneBoard {
    * Get the count of cells in a row
    */
   public getCellRows(): number {
-    let circlesPerSide = this.getCirclesPerSide();
-    return 2 * circlesPerSide - 1;
+    return 2 * this.getCirclesPerSide() - 1;
+  }
+
+  /**
+   * Set the count of cells in a row
+   */
+  public setCellRows(rows: number) {
+    let circlesPerSide = 0;
+
+    // Number of rows has to be odd
+    if(rows >= 0 && rows % 2 == 1) {
+      circlesPerSide = (rows + 1) / 2;
+      this.setCirclesPerSide(circlesPerSide);
+    }
+  }
+
+  /**
+   * Get the origin of the board game
+   */
+  public getOrigin(): CCPoint2D {
+    return this.Origin;
+  }
+
+  /**
+   * Set the origin of the abalone board
+   */
+  public setOrigin(x: number, y: number) {
+    this.Origin = new CCPoint2D(x, y);
+
+    this.calculateCircleCentres();
+    this.calculateTextCentres();
+  }
+
+  /**
+   * Get the border of the abalone board 
+   */
+  public getBorderBeam() {
+    return this.OuterBorder.RadiusOutCircle - this.InnerBorder.RadiusOutCircle;
+  }
+
+  /**
+   * Set the border beam
+   */
+  public setBorderBeam(borderWidth: number) {
+    this.InnerBorder.setRadius(this.OuterBorder.RadiusOutCircle - borderWidth);
   }
 
   /**
@@ -245,6 +288,16 @@ export class AbaloneBoard {
       );
     }
   }
+
+  private calculatedFromVariables() {
+      this.extAnglerad = Math.PI / this.edgeCount * 2;
+      this.innerRadialLength = this.radialLength - this.borderBeam;
+      this.xUnit = this.innerRadialLength / (2 * (this.circlesPerSide - 1) +
+                      (1 / Math.sin(this.extAnglerad)));
+      this.yUnit = this.xUnit * Math.tan(this.extAnglerad);
+      this.cellRows = 2 * this.circlesPerSide - 1;
+      this.cellCols = this.cellRows;
+    }
 
     private reloadPropertiesFromControls() {
       this.circlesPerSide = parseInt(this.helper.getValueById("circlesPerSide", this.circlesPerSide), 10);
