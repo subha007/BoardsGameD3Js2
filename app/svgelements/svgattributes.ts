@@ -35,8 +35,12 @@ export class SvgAttributes {
      * @param height the value of the id property (can be empty)
      * @return Returns the saved value
      */
-  public Add(key?: any, value?: any) : any {
+  public Add(key?: string, value?: any) : any {
     if(key && value === undefined) this._map[key] = value;
+    return this._map[key];
+  }
+
+  public getValue(key: string): any {
     return this._map[key];
   }
 
@@ -224,5 +228,5 @@ export class SvgAttributes {
      * @return Returns the saved value
      */
   public StrokeWidth(strokeWidth?: string) : string {
-    return this.Add("stroke-width", stroke);
+    return this.Add("stroke-width", strokeWidth);
 }

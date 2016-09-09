@@ -1,4 +1,5 @@
 import { SvgPolygonElement } from '../svgelements/svgpolygonelement';
+import { Helper } from '../helper';
 
 /**
   * Represents a 2D regular polygon in a plane
@@ -14,6 +15,9 @@ export class CCPolygon2D {
 	public RadiusOutCircle: number;
 	public ExternalAngleInRad: number;
 	public SvgElement: SvgPolygonElement;
+
+	// Local reference
+  	private helper: Helper = Helper.getInstance();
 	
 	constructor(edge?: number, radius?: number) {
 		this.EdgeCount = edge;
@@ -33,5 +37,9 @@ export class CCPolygon2D {
 	 */
 	public setRadius(radius: number) {
 		this.RadiusOutCircle = radius;
+	}
+
+	public getOuterBorder() {
+		let outerBorder: string = this.helper.getValueById("outerborderstroke", this.SvgElement.Attributes.Stroke);
 	}
 }

@@ -158,7 +158,12 @@ export class AbaloneBoard {
     // Number of rows has to be odd
     if(rows >= 0 && rows % 2 == 1) {
       circlesPerSide = (rows + 1) / 2;
+
       this.setCirclesPerSide(circlesPerSide);
+
+      this.calculateUnitMeasure();
+      this.calculateCircleCentres();
+      this.calculateTextCentres();
     }
   }
 
@@ -191,6 +196,28 @@ export class AbaloneBoard {
    */
   public setBorderBeam(borderWidth: number) {
     this.InnerBorder.setRadius(this.OuterBorder.RadiusOutCircle - borderWidth);
+
+    this.calculateUnitMeasure();
+    this.calculateCircleCentres();
+    this.calculateTextCentres();
+  }
+
+  /**
+   * Set the cell gap
+   */
+  public setCellGap(cellGap: number) {
+    this.CellGap = cellGap;
+
+    this.calculateCircleCentres();
+  }
+
+  /**
+   * Calculate Unit measure
+   */
+  private calculateUnitMeasure() {
+    this.UnitMeasure.Width = this.InnerBorder.RadiusOutCircle / (2 * (this.getCirclesPerSide() - 1) +
+                      (1 / Math.sin(this.OuterBorder.ExternalAngleInRad)));
+    this.UnitMeasure.Height = this.UnitMeasure.Width * Math.tan(this.OuterBorder.ExternalAngleInRad);
   }
 
   /**
@@ -289,24 +316,24 @@ export class AbaloneBoard {
     }
   }
 
-  private calculatedFromVariables() {
-      this.extAnglerad = Math.PI / this.edgeCount * 2;
-      this.innerRadialLength = this.radialLength - this.borderBeam;
-      this.xUnit = this.innerRadialLength / (2 * (this.circlesPerSide - 1) +
-                      (1 / Math.sin(this.extAnglerad)));
-      this.yUnit = this.xUnit * Math.tan(this.extAnglerad);
-      this.cellRows = 2 * this.circlesPerSide - 1;
-      this.cellCols = this.cellRows;
-    }
+  // private calculatedFromVariables() {
+  //     this.extAnglerad = Math.PI / this.edgeCount * 2;
+  //     this.innerRadialLength = this.radialLength - this.borderBeam;
+  //     this.xUnit = this.innerRadialLength / (2 * (this.circlesPerSide - 1) +
+  //                     (1 / Math.sin(this.extAnglerad)));
+  //     this.yUnit = this.xUnit * Math.tan(this.extAnglerad);
+  //     this.cellRows = 2 * this.circlesPerSide - 1;
+  //     this.cellCols = this.cellRows;
+  //   }
 
-    private reloadPropertiesFromControls() {
-      this.circlesPerSide = parseInt(this.helper.getValueById("circlesPerSide", this.circlesPerSide), 10);
-      this.borderBeam = this.helper.getValueById("borderbeam", this.borderBeam);
-      this.radialLength = this.helper.getValueById("radialwidth", this.radialLength);
-      this.cellGap = this.helper.getValueById("cellradiusgap", this.cellGap);
-      this.isLockSvgSize = this.helper.getCheckedById("svgaspectratiocheck", this.isLockSvgSize);
-      this.isLockSvgAbalone = this.helper.getCheckedById("svglockcalculatecheck", this.isLockSvgAbalone);
-    }
+  //   private reloadPropertiesFromControls() {
+  //     this.circlesPerSide = parseInt(this.helper.getValueById("circlesPerSide", this.circlesPerSide), 10);
+  //     this.borderBeam = this.helper.getValueById("borderbeam", this.borderBeam);
+  //     this.radialLength = this.helper.getValueById("radialwidth", this.radialLength);
+  //     this.cellGap = this.helper.getValueById("cellradiusgap", this.cellGap);
+  //     this.isLockSvgSize = this.helper.getCheckedById("svgaspectratiocheck", this.isLockSvgSize);
+  //     this.isLockSvgAbalone = this.helper.getCheckedById("svglockcalculatecheck", this.isLockSvgAbalone);
+  //   }
 
     private reloadStyleFromControls() {
       this.outerBorderStroke = this.helper.getValueById("outerborderstroke", this.outerBorderStroke);
@@ -574,4 +601,6 @@ export class AbaloneBoard {
         this.calculatePlayerInitialPositions();
         this.draw();
     }
+}
+ }
 }
